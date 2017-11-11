@@ -5,10 +5,20 @@ var(Nightmare) DifficultySettings Nightmare;
 
 /** Great example here on why slaping private on stuff like this is pointless and uneccesary */
 var DifficultySettings CurrentSettingsMod;
-var float HealthMult, HeadHealthMult, SprintChanceMult;
+var float HealthMult, HeadHealthMult;
+
+var KFGameDifficultyInfo OriginalDifficultyInfo;
+var KFGameInfo GameOwner;
 
 function SetDifficultySettings( float GameDifficulty )
 {
+	if( OriginalDifficultyInfo == None )
+		OriginalDifficultyInfo = new(GameOwner) GameOwner.DifficultyInfoClass;
+		
+	if( GameDifficulty >= `DIFFICULTY_NIGHTMARE )
+		OriginalDifficultyInfo.SetDifficultySettings(`DIFFICULTY_HELLONEARTH);
+	else OriginalDifficultyInfo.SetDifficultySettings(GameDifficulty);
+	
 	switch ( GameDifficulty )
 	{
 	 	case `DIFFICULTY_NORMAL:         CurrentSettingsMod = Normal; break;
@@ -25,7 +35,7 @@ function float GetCharHealthModDifficulty( KFPawn_Monster P, float GameDifficult
 {
 	local float DefValue;
 	
-	DefValue = Super.GetCharHealthModDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty);
+	DefValue = OriginalDifficultyInfo.GetCharHealthModDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty);
 	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
 		DefValue *= HealthMult;
 	
@@ -36,7 +46,7 @@ function float GetCharHeadHealthModDifficulty( KFPawn_Monster P, float GameDiffi
 {
 	local float DefValue;
 	
-	DefValue = Super.GetCharHeadHealthModDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty);
+	DefValue = OriginalDifficultyInfo.GetCharHeadHealthModDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty);
 	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
 		DefValue *= HeadHealthMult;
 	
@@ -45,31 +55,19 @@ function float GetCharHeadHealthModDifficulty( KFPawn_Monster P, float GameDiffi
 
 function float GetCharSprintChanceByDifficulty( KFPawn_Monster P, float GameDifficulty )
 {
-	local float DefValue;
-	
-	DefValue = Super.GetCharSprintChanceByDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty);
-	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
-		DefValue *= SprintChanceMult;
-	
-	return DefValue;
+	return OriginalDifficultyInfo.GetCharSprintChanceByDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty);
 }
 
 function float GetCharSprintWhenDamagedChanceByDifficulty( KFPawn_Monster P, float GameDifficulty )
 {
-	local float DefValue;
-	
-	DefValue = Super.GetCharSprintWhenDamagedChanceByDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty);
-	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
-		DefValue *= SprintChanceMult;
-	
-	return DefValue;
+	return OriginalDifficultyInfo.GetCharSprintWhenDamagedChanceByDifficulty(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty);
 }
 
 function float GetAIDamageModifier(KFPawn_Monster P, float GameDifficulty, bool bSoloPlay)
 {
 	local float DefValue;
 	
-	DefValue = Super.GetAIDamageModifier(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty, bSoloPlay);
+	DefValue = OriginalDifficultyInfo.GetAIDamageModifier(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty, bSoloPlay);
 	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
 		DefValue *= 1.25f;
 	
@@ -80,7 +78,7 @@ function float GetAISpeedMod(KFPawn_Monster P, float GameDifficulty)
 {
 	local float DefValue;
 	
-	DefValue = Super.GetAISpeedMod(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? GameDifficulty-1 : GameDifficulty);
+	DefValue = OriginalDifficultyInfo.GetAISpeedMod(P, GameDifficulty == `DIFFICULTY_NIGHTMARE ? `DIFFICULTY_HELLONEARTH : GameDifficulty);
 	if( GameDifficulty == `DIFFICULTY_NIGHTMARE )
 		DefValue *= 1.1f;
 	
@@ -94,7 +92,7 @@ function float GetGlobalHealthMod()
 
 function float GetTraderTimeByDifficulty()
 {
-	return CurrentSettingsMod.TraderTime;
+	return Max(OriginalDifficultyInfo.GetTraderTimeByDifficulty() * 0.5, 10);
 }
 
 function float GetAIGroundSpeedMod()
@@ -104,7 +102,7 @@ function float GetAIGroundSpeedMod()
 
 function float GetDifficultyMaxAIModifier()
 {
-	return CurrentSettingsMod.WaveCountMod;
+	return OriginalDifficultyInfo.GetDifficultyMaxAIModifier() * 1.15;
 }
 
 function float GetKillCashModifier()
@@ -154,7 +152,7 @@ function float GetSelfInflictedDamageMod()
 
 function float GetSpawnRateModifier()
 {
-	return CurrentSettingsMod.SpawnRateModifier;
+	return OriginalDifficultyInfo.GetSpawnRateModifier() * 0.5;
 }
 
 static function float GetDifficultyValue( byte DifficultyIndex )
@@ -188,17 +186,17 @@ defaultproperties
 {
 	HealthMult=1.0
 	HeadHealthMult=1.0
-	SprintChanceMult=1.0
 	
 	Nightmare={(
 		TraderTime=30,
-		MovementSpeedMod=1.100000,
-   		WaveCountMod=1.950000,
-   		DoshKillMod=0.750000,
-   		StartingDosh=150,
-   		AmmoPickupsMod=0.100000,
+		MovementSpeedMod=1.112500,
+   		WaveCountMod=1.980000,
+   		DoshKillMod=0.500000,
+   		StartingDosh=100,
+   		AmmoPickupsMod=0.010000,
    		ItemPickupsMod=0.050000,
    		MediumAttackChance=1.000000,
-        HardAttackChance=1.000000,
-        SelfInflictedDamageMod=1.00000)}
+        HardAttackChance=2.000000,
+        SelfInflictedDamageMod=1.00000,
+		SpawnRateModifier=0.35)}
 }

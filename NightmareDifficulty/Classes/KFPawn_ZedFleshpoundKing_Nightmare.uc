@@ -1,12 +1,16 @@
 class KFPawn_ZedFleshpoundKing_Nightmare extends KFPawn_ZedFleshpoundKing;
 
 var const array<float> XPValuesMod;
+var	BossMinionWaveInfo SummonWaves[5];
+
+simulated function PostBeginPlay()
+{
+	Super.PostBeginPlay();
+	SetEnraged(true);
+}
 
 function KFAIWaveInfo GetWaveInfo(int BattlePhase, int Difficulty)
 {
-	if( Difficulty > ArrayCount(SummonWaves) )
-		Difficulty = ArrayCount(SummonWaves) - 1;
-	
     switch (BattlePhase)
     {
     case 1:
@@ -33,6 +37,9 @@ simulated static function float GetXPValue(byte Difficulty)
 
 DefaultProperties
 {
+	GroundSpeed=360.f
+	SprintSpeed=780.f
+	
     XPValuesMod(0)=1291
     XPValuesMod(1)=1694
     XPValuesMod(2)=1790
@@ -41,4 +48,7 @@ DefaultProperties
 	
 	DifficultySettings=class'KFDifficulty_FleshpoundKing_Nightmare'
 	ShieldHealthMaxDefaults(4)=3000
+	
+    SummonWaves(4)=(PhaseOneWave=KFAIWaveInfo'GP_Spawning_ARCH.Outbreak.KingFleshpoundSubWave',PhaseTwoWave=KFAIWaveInfo'GP_Spawning_ARCH.Outbreak.KingFleshpoundSubWave',PhaseThreeWave=KFAIWaveInfo'GP_Spawning_ARCH.Outbreak.KingFleshpoundSubWave',PhaseFourWave=KFAIWaveInfo'GP_Spawning_ARCH.Outbreak.KingFleshpoundSubWave')
+    NumMinionsToSpawn=(X=3,Y=6)
 }

@@ -1,7 +1,6 @@
 class KFPawn_ZedFleshpoundAlpha_Nightmare extends KFPawn_ZedFleshpound_Nightmare;
 
 var ParticleSystemComponent BurningEffect;
-var(Weapon) instanced FIRE_MeleeHelper FireAttackHelper;
 
 simulated function PostBeginPlay()
 {
@@ -9,20 +8,15 @@ simulated function PostBeginPlay()
 	
 	Super.PostBeginPlay();
 	
-	if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty >= `DIFFICULTY_NIGHTMARE )
+	AfflictionHandler.FireFullyCharredDuration = 2.5;
+	AfflictionHandler.FireCharPercentThreshhold = 0.25;
+	
+	for( i=0; i<DamageTypeModifiers.Length; i++ )
 	{
-		MeleeAttackHelper = FireAttackHelper;
-		
-		AfflictionHandler.FireFullyCharredDuration = 2.5;
-		AfflictionHandler.FireCharPercentThreshhold = 0.25;
-		
-		for( i=0; i<DamageTypeModifiers.Length; i++ )
+		if( DamageTypeModifiers[i].DamageType == class'KFDT_Fire' )
 		{
-			if( DamageTypeModifiers[i].DamageType == class'KFDT_Fire' )
-			{
-				DamageTypeModifiers[i].DamageScale[0] = 0.1;
-				break;
-			}
+			DamageTypeModifiers[i].DamageScale[0] = 0.1;
+			break;
 		}
 	}
 
@@ -30,25 +24,37 @@ simulated function PostBeginPlay()
 		UpdateGameplayMICParams();
 }
 
+simulated function SetCharacterArch( KFCharacterInfoBase Info, optional bool bForce )
+{
+	local SkeletalMeshComponent PACAttachment;
+	
+	Super.SetCharacterArch(Info, bForce);
+	
+	// MonsterArchPath="ZED_ARCH.ZED_FleshpoundKing_Archetype" doesn't work for some reason
+	PACAttachment = new(Self) class'SkeletalMeshComponent';
+	if (PACAttachment != none)
+	{
+		ThirdPersonAttachments[0] = PACAttachment;
+		PACAttachment.SetActorCollision(false, false);
+		PACAttachment.SetSkeletalMesh(SkeletalMesh'ZED_Fleshpound_King_MESH.ZED_Fleshpound_King');
+		PACAttachment.SetParentAnimComponent(Mesh);
+		PACAttachment.SetLODParent(Mesh);
+		PACAttachment.SetShadowParent(Mesh);
+		PACAttachment.SetLightingChannels(PawnLightingChannel);
+		
+		PACAttachment.SetMaterial(0, MaterialInstanceConstant'ZED_Fleshpound_MAT.ZED_Fleshpound_Mic_albino');
+		PACAttachment.CreateAndSetMaterialInstanceConstant(0);
+		
+		AttachComponent(PACAttachment);
+	}  
+}
+
 simulated function UpdateGameplayMICParams()
 {
-	local LinearColor C;
-	
-	Super.UpdateGameplayMICParams();
+	Super(KFPawn_ZedFleshpound).UpdateGameplayMICParams();
 	
 	if ( WorldInfo.NetMode != NM_DedicatedServer )
 	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-		
-		C.R = 1;
-		C.G = 0.5;
-		C.B = 0;
-		C.A = 1;
-		
-		CharacterMICs[0].SetVectorParameterValue('Vector_GlowColor', C);
-		CharacterMICs[0].SetVectorParameterValue('Vector_FresnelGlowColor', C);
-		
 		BurningEffect = new(self) class'ParticleSystemComponent';
 		BurningEffect.SetTemplate( ParticleSystem'FX_Gameplay_EMIT.Chr.FX_CHR_Fire' );
 		Mesh.AttachComponentToSocket( BurningEffect, 'Hips' );
@@ -63,27 +69,26 @@ simulated function TerminateEffectsOnDeath()
 		BurningEffect.SetStopSpawning( -1, true );
 }
 
-simulated event bool UsePlayerControlledZedSkin()
+static function string GetLocalizedName()
 {
-	local KFGameReplicationInfo GRI;
-	
-	GRI = KFGameReplicationInfo(WorldInfo.GRI);
-	if( GRI != None )
-		return GRI.GameDifficulty == `DIFFICULTY_NIGHTMARE;
-		
-    return false;
+	return Localize("Zeds", String(default.LocalizationKey), "Nightmare");;
 }
 
 defaultproperties
 {
-	Health=1500
+	LocalizationKey=KFPawn_ZedFleshpoundAlpha
+	DefaultGlowColor=(R=1,G=0.5f)
+	
+	Health=2000
+	GroundSpeed=400.f
 	
 	Begin Object Class=FIRE_MeleeHelper Name=FIREMeleeHelper_0
-		BaseDamage=6.f
-		MaxHitRange=172.f
-		MomentumTransfer=25000.f
+		BaseDamage=55.f
+		MaxHitRange=250.f
+	    MomentumTransfer=55000.f
+		MyDamageType=class'KFDT_Fire_Napalm'
 	End Object
-	FireAttackHelper=FIREMeleeHelper_0
+	MeleeAttackHelper=FIREMeleeHelper_0
 	
 	Begin Object Class=KFGameExplosion Name=ExploTemplate1
 		Damage=32

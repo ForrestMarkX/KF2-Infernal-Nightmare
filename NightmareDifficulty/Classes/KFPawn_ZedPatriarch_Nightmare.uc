@@ -1,44 +1,24 @@
 class KFPawn_ZedPatriarch_Nightmare extends KFPawn_ZedPatriarch;
 
 var const array<float> XPValuesMod;
+var	BossMinionWaveInfo SummonWaves[5];
 
-function SummonChildren()
+function KFAIWaveInfo GetWaveInfo(int BattlePhase, int Difficulty)
 {
-    local KFAIWaveInfo MinionWave;
-    local KFGameInfo MyKFGameInfo;
-	local byte MinionWaveIndex;
-
-	MyKFGameInfo = KFGameInfo(WorldInfo.Game);
-
-    // Force frustration mode on
-    MyKFGameInfo.GetAIDirector().bForceFrustration = true;
-	
-	if( MyKFGameInfo.GameDifficulty < ArrayCount(SummonWaves) )
-		MinionWaveIndex = MyKFGameInfo.GameDifficulty;
-	else MinionWaveIndex = ArrayCount(SummonWaves) - 1;
-
-    // Select the correct batch of zeds to spawn during this battle phase
-    if( CurrentBattlePhase == 1 )
+    switch (BattlePhase)
     {
-        MinionWave = SummonWaves[MinionWaveIndex].PhaseOneWave;
-    }
-    else if( CurrentBattlePhase == 2 )
-    {
-        MinionWave = SummonWaves[MinionWaveIndex].PhaseTwoWave;
-    }
-    else if( CurrentBattlePhase == 3 )
-    {
-        MinionWave = SummonWaves[MinionWaveIndex].PhaseThreeWave;
+    case 1:
+        return SummonWaves[Difficulty].PhaseOneWave;
+        break;
+    case 2:
+        return SummonWaves[Difficulty].PhaseTwoWave;
+        break;
+    case 3:
+        return SummonWaves[Difficulty].PhaseThreeWave;
+        break;
     }
 
-    if( MinionWave != none )
-    {
-		if( MyKFGameInfo.SpawnManager != none )
-		{
-			MyKFGameInfo.SpawnManager.LeftoverSpawnSquad.Length = 0;
-		 	MyKFGameInfo.SpawnManager.SummonBossMinions( MinionWave.Squads, GetNumMinionsToSpawn() );
-		}
-	}
+    return none;
 }
 
 simulated static function float GetXPValue(byte Difficulty)
@@ -53,6 +33,9 @@ defaultproperties
 	XPValuesMod(2)=1790
 	XPValuesMod(3)=1843
 	XPValuesMod(4)=2212
+	
+	SummonWaves(4)=(PhaseOneWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_One',PhaseTwoWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_Two',PhaseThreeWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_Three')
+	NumMinionsToSpawn=(X=8, Y=14)
 	
 	BattlePhases(0)={(bAllowedToSprint=true,
 					  SprintCooldownTime=3.f,

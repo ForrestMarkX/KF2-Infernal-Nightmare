@@ -1,6 +1,25 @@
 class KFPawn_ZedHans_Nightmare extends KFPawn_ZedHans;
 
 var const array<float> XPValuesMod;
+var	BossMinionWaveInfo SummonWaves[5];
+
+function KFAIWaveInfo GetWaveInfo(int BattlePhase, int Difficulty)
+{
+    switch (BattlePhase)
+    {
+    case 1:
+        return SummonWaves[Difficulty].PhaseOneWave;
+        break;
+    case 2:
+        return SummonWaves[Difficulty].PhaseTwoWave;
+        break;
+    case 3:
+        return SummonWaves[Difficulty].PhaseThreeWave;
+        break;
+    }
+
+    return none;
+}
 
 simulated static function float GetXPValue(byte Difficulty)
 {
@@ -14,6 +33,9 @@ DefaultProperties
 	XPValuesMod(2)=1790
 	XPValuesMod(3)=1843
 	XPValuesMod(4)=2212
+	
+	SummonWaves(4)=(PhaseOneWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Hans_Minions_HOE_One',PhaseTwoWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Hans_Minions_HOE_Two',PhaseThreeWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Hans_Minions_HOE_Three')
+	NumMinionsToSpawn=(X=4, Y=22)
 	
     BattlePhases(0)={(bCanFrenzy=false,
                     bSprintingBehavior=false,

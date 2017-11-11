@@ -19,12 +19,7 @@ simulated function UpdateGameplayMICParams()
 	Super.UpdateGameplayMICParams();
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
-	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-			
 		CharacterMICs[0].SetTextureParameterValue('Tex2D_Diffuse', Texture2D'ZED_Fleshpound_TEX.ZED_Fleshpound_D');
-	}
 }
 
 simulated function ANIMNOTIFY_RagePoundLeft()
@@ -36,6 +31,14 @@ simulated function ANIMNOTIFY_RagePoundLeft()
 }
 
 simulated function ANIMNOTIFY_RagePoundRight()
+{
+	local vector ExploLocation;
+
+	Mesh.GetSocketWorldLocationAndRotation( 'FX_Root', ExploLocation );
+	TriggerRagePoundExplosion(ExploLocation);
+}
+
+simulated function ANIMNOTIFY_RagePoundRightFinal()
 {
 	local vector ExploLocation;
 
@@ -61,13 +64,7 @@ simulated static function float GetXPValue(byte Difficulty)
 
 simulated event bool UsePlayerControlledZedSkin()
 {
-	local KFGameReplicationInfo GRI;
-	
-	GRI = KFGameReplicationInfo(WorldInfo.GRI);
-	if( GRI != None )
-		return GRI.GameDifficulty == `DIFFICULTY_NIGHTMARE;
-		
-    return false;
+    return true;
 }
 
 DefaultProperties

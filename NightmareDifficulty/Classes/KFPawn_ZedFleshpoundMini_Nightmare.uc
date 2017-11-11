@@ -15,12 +15,7 @@ simulated function UpdateGameplayMICParams()
 	Super.UpdateGameplayMICParams();
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
-	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-			
 		CharacterMICs[0].SetTextureParameterValue('Tex2d_Mask', Texture2D'ZED_Fleshpound_TEX.ZED_Fleshpound_M_albino');
-	}
 }
 
 simulated static function float GetXPValue(byte Difficulty)

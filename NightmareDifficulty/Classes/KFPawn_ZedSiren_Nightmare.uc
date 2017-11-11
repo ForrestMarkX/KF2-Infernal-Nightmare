@@ -17,9 +17,6 @@ simulated function UpdateGameplayMICParams()
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
 	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-			
 		CharacterMICs[0].SetVectorParameterValue('Vector_GlowColor', MainGlowColor);
 		CharacterMICs[0].SetVectorParameterValue('Vector_FresnelGlowColor', MainGlowColor);
 		CharacterMICs[0].SetTextureParameterValue('Tex2D_Diffuse', Texture2D'ZED_Siren_TEX.ZED_Siren_D');
@@ -33,13 +30,7 @@ simulated static function float GetXPValue(byte Difficulty)
 
 simulated event bool UsePlayerControlledZedSkin()
 {
-	local KFGameReplicationInfo GRI;
-	
-	GRI = KFGameReplicationInfo(WorldInfo.GRI);
-	if( GRI != None )
-		return GRI.GameDifficulty == `DIFFICULTY_NIGHTMARE;
-		
-    return false;
+    return true;
 }
 
 defaultproperties

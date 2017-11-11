@@ -9,5 +9,5 @@ simulated function PlayMeleeHitEffects(Actor Target, vector HitLocation, vector 
 
 defaultproperties
 {
-	MyDamageType=Class'KFDT_Fire'
+	MyDamageType=Class'KFDT_ZedFire'
 }

@@ -15,14 +15,11 @@ simulated function SetCharacterArch( KFCharacterInfoBase Info, optional bool bFo
 {
 	local KFCharacterInfo_Monster MonsterInfo;
 	
-	if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty == `DIFFICULTY_NIGHTMARE )
+	MonsterInfo = KFCharacterInfo_Monster(Info);
+	if( MonsterInfo != None )
 	{
-		MonsterInfo = KFCharacterInfo_Monster(Info);
-		if( MonsterInfo != None )
-		{
-			MonsterInfo.Skins[0] = MaterialInstanceConstant'ZED_Clot_MAT.ZED_Clot_M_albino';
-			MonsterInfo.GoreSkins[0] = MaterialInstanceConstant'ZED_Clot_MAT.ZED_Clot_Gore_M_albino';
-		}
+		MonsterInfo.Skins[0] = MaterialInstanceConstant'ZED_Clot_MAT.ZED_Clot_M_albino';
+		MonsterInfo.GoreSkins[0] = MaterialInstanceConstant'ZED_Clot_MAT.ZED_Clot_Gore_M_albino';
 	}
 	
 	Super.SetCharacterArch(Info, bForce);
@@ -34,9 +31,6 @@ simulated function UpdateGameplayMICParams()
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
 	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-			
 		CharacterMICs[0].SetVectorParameterValue('Vector_GlowColor', MainGlowColor);
 		CharacterMICs[0].SetVectorParameterValue('Vector_FresnelGlowColor', MainGlowColor);
 		CharacterMICs[0].SetTextureParameterValue('Tex2D_Diffuse', Texture2D'ZED_UndevelopedClot_TEX.ZED_UndevelopedClot_D');

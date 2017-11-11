@@ -2,7 +2,6 @@ class KFPawn_ZedClot_AlphaKing_Nightmare extends KFPawn_ZedClot_AlphaKing;
 
 var const array<float> XPValuesMod;
 var ParticleSystemComponent BurningEffect;
-var(Weapon) instanced FIRE_MeleeHelper FireAttackHelper;
 
 simulated function PostBeginPlay()
 {
@@ -10,20 +9,15 @@ simulated function PostBeginPlay()
 	
 	Super.PostBeginPlay();
 	
-	if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty >= `DIFFICULTY_NIGHTMARE )
+	AfflictionHandler.FireFullyCharredDuration = 2.5;
+	AfflictionHandler.FireCharPercentThreshhold = 0.25;
+	
+	for( i=0; i<DamageTypeModifiers.Length; i++ )
 	{
-		MeleeAttackHelper = FireAttackHelper;
-		
-		AfflictionHandler.FireFullyCharredDuration = 2.5;
-		AfflictionHandler.FireCharPercentThreshhold = 0.25;
-		
-		for( i=0; i<DamageTypeModifiers.Length; i++ )
+		if( DamageTypeModifiers[i].DamageType == class'KFDT_Fire' )
 		{
-			if( DamageTypeModifiers[i].DamageType == class'KFDT_Fire' )
-			{
-				DamageTypeModifiers[i].DamageScale[0] = 0.1;
-				break;
-			}
+			DamageTypeModifiers[i].DamageScale[0] = 0.1;
+			break;
 		}
 	}
 
@@ -39,9 +33,6 @@ simulated function UpdateGameplayMICParams()
 	
 	if ( WorldInfo.NetMode != NM_DedicatedServer )
 	{
-		if( KFGameReplicationInfo(WorldInfo.GRI).GameDifficulty < `DIFFICULTY_NIGHTMARE )
-			return;
-		
 		C.R = 1;
 		C.G = 0.5;
 		C.B = 0;
@@ -76,7 +67,7 @@ defaultproperties
 		MaxHitRange=172.f
 		MomentumTransfer=25000.f
 	End Object
-	FireAttackHelper=FIREMeleeHelper_0
+	MeleeAttackHelper=FIREMeleeHelper_0
 	
 	XPValuesMod(0)=8
 	XPValuesMod(1)=11
