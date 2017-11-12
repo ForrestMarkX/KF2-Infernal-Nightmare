@@ -1,24 +1,10 @@
 class KFPawn_ZedPatriarch_Nightmare extends KFPawn_ZedPatriarch;
 
 var const array<float> XPValuesMod;
-var	BossMinionWaveInfo SummonWaves[5];
 
 function KFAIWaveInfo GetWaveInfo(int BattlePhase, int Difficulty)
 {
-    switch (BattlePhase)
-    {
-    case 1:
-        return SummonWaves[Difficulty].PhaseOneWave;
-        break;
-    case 2:
-        return SummonWaves[Difficulty].PhaseTwoWave;
-        break;
-    case 3:
-        return SummonWaves[Difficulty].PhaseThreeWave;
-        break;
-    }
-
-    return none;
+	return Super.GetWaveInfo(BattlePhase, `DIFFICULTY_HELLONEARTH);
 }
 
 simulated static function float GetXPValue(byte Difficulty)
@@ -34,7 +20,6 @@ defaultproperties
 	XPValuesMod(3)=1843
 	XPValuesMod(4)=2212
 	
-	SummonWaves(4)=(PhaseOneWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_One',PhaseTwoWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_Two',PhaseThreeWave=KFAIWaveInfo'GP_Spawning_ARCH.Special.Pat_Minions_HOE_Three')
 	NumMinionsToSpawn=(X=8, Y=14)
 	
 	BattlePhases(0)={(bAllowedToSprint=true,

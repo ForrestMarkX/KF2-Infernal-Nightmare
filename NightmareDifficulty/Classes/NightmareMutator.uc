@@ -12,7 +12,7 @@ struct ZedModInfo
 var globalconfig ZedModInfo ZedModifiers; //Multipliers for zed systems
 var globalconfig string HealthSound;
 
-var config int ConfigVer; //Used for generating default config values
+var globalconfig int ConfigVer; //Used for generating default config values
 
 struct AIReplacementS
 {
@@ -25,12 +25,6 @@ struct AIReplacementS
     }
 };
 var array<AIReplacementS> AIClassList;
-
-struct CDCompatStruct
-{
-    var string Original, Replacment;
-};
-var array<CDCompatStruct> CDComptability;
 
 var SoundCue TakeHealthSound;
 
@@ -98,18 +92,7 @@ function PostBeginPlay()
     }
     
     SetupDifficultySettings();
-    
-    if( KFGI.IsA('CD_Survival') )
-    {
-        for( i=0; CDComptability.Length < i; i++ )
-        {
-            CDClasses.Original = class<KFPawn_Monster>(DynamicLoadObject(CDComptability[i].Original, class'Class'));
-            CDClasses.Replacment = class<KFPawn_Monster>(DynamicLoadObject(CDComptability[i].Replacment, class'Class'));
-            
-            AIClassList.AddItem(CDClasses);
-        }
-    }
-    
+   
     for( i=0; AIClassList.Length < i; i++ )
     {
         AIClassList[i].Replacment.static.PreloadContent();
@@ -124,20 +107,8 @@ function AdjustVariousSettings()
     KFGI = KFGameInfo(WorldInfo.Game);
     if( KFGI == None || KFGI.GameDifficulty < `DIFFICULTY_NIGHTMARE )
         return;
-        
-    KFGI.SpawnManager = new(KFGI) class'KFAISpawnManager_Nightmare';
-    
-    if( KFAISpawnManager_Nightmare(KFGI.SpawnManager) != None )
-        KFAISpawnManager_Nightmare(KFGI.SpawnManager).ControllerMutator = self;
-    
-    KFGI.SpawnManager.Initialize();
-    
-    KFGI.DifficultyInfo = new(KFGI) class'KFGameDifficulty_Nightmare';
-    
-    if( KFGameDifficulty_Nightmare(KFGI.DifficultyInfo) != None )
-        KFGameDifficulty_Nightmare(KFGI.DifficultyInfo).GameOwner = KFGI;
-        
-    KFGI.DifficultyInfo.SetDifficultySettings( KFGI.GameDifficulty );
+		
+	SetupCompatibilityClasses(KFGI);
     
     KFDI = KFGameDifficulty_Nightmare(KFGI.DifficultyInfo);
     if( KFDI != None )
@@ -153,6 +124,23 @@ function AdjustVariousSettings()
     
     if( KFGameInfo_Survival(KFGI) != None )
         KFGameInfo_Survival(KFGI).TimeBetweenWaves = KFGI.DifficultyInfo.GetTraderTimeByDifficulty();
+}
+
+function SetupCompatibilityClasses(KFGameInfo KFGI)
+{
+    KFGI.SpawnManager = new(KFGI) class'KFAISpawnManager_Nightmare';
+    
+    if( KFAISpawnManager_Nightmare(KFGI.SpawnManager) != None )
+        KFAISpawnManager_Nightmare(KFGI.SpawnManager).ControllerMutator = self;
+    
+    KFGI.SpawnManager.Initialize();
+    
+    KFGI.DifficultyInfo = new(KFGI) class'KFGameDifficulty_Nightmare';
+    
+    if( KFGameDifficulty_Nightmare(KFGI.DifficultyInfo) != None )
+        KFGameDifficulty_Nightmare(KFGI.DifficultyInfo).GameOwner = KFGI;
+        
+    KFGI.DifficultyInfo.SetDifficultySettings( KFGI.GameDifficulty );
 }
 
 function Timer()
@@ -223,6 +211,7 @@ function AdjustSpawnList(out array<class<KFPawn_Monster> > SpawnList)
     
     for( i=0; i<SpawnList.Length; i++ )
     {
+		`Log(SpawnList[i]);
         for( j=0; j<AIClassList.Length; j++ )
         {
             if( AIClassList[j].Replacment == None || AIClassList[j].Original == None )
@@ -255,13 +244,4 @@ defaultproperties
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedHusk', Replacment=class'NightmareDifficulty.KFPawn_ZedHusk_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedHans', Replacment=class'NightmareDifficulty.KFPawn_ZedHans_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedPatriarch', Replacment=class'NightmareDifficulty.KFPawn_ZedPatriarch_Nightmare'))
-    
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_ClotAlpha_Regular", Replacment="NightmareDifficulty.KFPawn_ZedClot_Alpha_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_ClotAlpha_Special", Replacment="NightmareDifficulty.KFPawn_ZedClot_AlphaKing_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Crawler_Regular", Replacment="NightmareDifficulty.KFPawn_ZedCrawler_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Crawler_Special", Replacment="NightmareDifficulty.KFPawn_ZedCrawlerKing_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Fleshpound_Regular", Replacment="NightmareDifficulty.KFPawn_ZedFleshpound_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Fleshpound_Special", Replacment="NightmareDifficulty.KFPawn_ZedFleshpoundAlpha_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Gorefast_Regular", Replacment="NightmareDifficulty.KFPawn_ZedGorefast_Nightmare"))
-    CDComptability.Add((Original="ControlledDifficulty.CD_DS_Gorefast_Special", Replacment="NightmareDifficulty.KFPawn_ZedGorefastDualBlade_Nightmare"))
 }

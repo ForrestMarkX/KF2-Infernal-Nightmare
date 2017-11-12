@@ -35,7 +35,7 @@ simulated event bool UsePlayerControlledZedSkin()
 
 defaultproperties
 {
-	GroundSpeed=345.f
+	GroundSpeed=480.f
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Explosive_FleshpoundKingRage_Heavy', DamageScale=(0)))
 	
 	MainGlowColor=(R=1,G=0.15f)

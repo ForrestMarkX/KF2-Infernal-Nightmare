@@ -80,11 +80,11 @@ defaultproperties
 	DefaultGlowColor=(R=1,G=0.5f)
 	
 	Health=2000
-	GroundSpeed=400.f
+	GroundSpeed=510.f
 	
 	Begin Object Class=FIRE_MeleeHelper Name=FIREMeleeHelper_0
-		BaseDamage=55.f
-		MaxHitRange=250.f
+		BaseDamage=60.f
+		MaxHitRange=300.f
 	    MomentumTransfer=55000.f
 		MyDamageType=class'KFDT_Fire_Napalm'
 	End Object
