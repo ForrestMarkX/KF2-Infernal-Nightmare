@@ -155,6 +155,21 @@ function float GetSpawnRateModifier()
 	return OriginalDifficultyInfo.GetSpawnRateModifier() * 0.5;
 }
 
+function float GetPlayerNumMaxAIModifier( byte NumLivingPlayers )
+{
+	return OriginalDifficultyInfo.GetPlayerNumMaxAIModifier(NumLivingPlayers);
+}
+
+function float GetDamageResistanceModifier( byte NumLivingPlayers )
+{
+	return OriginalDifficultyInfo.GetDamageResistanceModifier( NumLivingPlayers );
+}
+
+function GetAIHealthModifier(KFPawn_Monster P, float ForGameDifficulty, byte NumLivingPlayers, out float HealthMod, out float HeadHealthMod, optional bool bApplyDifficultyScaling=true)
+{
+	OriginalDifficultyInfo.GetAIHealthModifier(P, ForGameDifficulty, NumLivingPlayers, HealthMod, HeadHealthMod, bApplyDifficultyScaling);
+}
+
 static function float GetDifficultyValue( byte DifficultyIndex )
 {
 	switch ( DifficultyIndex )

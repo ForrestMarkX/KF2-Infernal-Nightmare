@@ -33,7 +33,6 @@ function PostBeginPlay()
     local KFGameInfo KFGI;
     local ZedModInfo DefValues;
     local int i;
-    local AIReplacementS CDClasses;
     
     Super.PostBeginPlay();
 	
@@ -211,7 +210,6 @@ function AdjustSpawnList(out array<class<KFPawn_Monster> > SpawnList)
     
     for( i=0; i<SpawnList.Length; i++ )
     {
-		`Log(SpawnList[i]);
         for( j=0; j<AIClassList.Length; j++ )
         {
             if( AIClassList[j].Replacment == None || AIClassList[j].Original == None )
