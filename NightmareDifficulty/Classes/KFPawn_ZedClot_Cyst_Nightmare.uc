@@ -3,6 +3,7 @@ class KFPawn_ZedClot_Cyst_Nightmare extends KFPawn_ZedClot_Cyst;
 var const array<float> XPValuesMod;
 var LinearColor MainGlowColor;
 
+/*
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
@@ -39,6 +40,7 @@ simulated function UpdateGameplayMICParams()
 		CharacterMICs[0].SetTextureParameterValue('Tex2D_SSS_Mask', Texture2D'ZED_UndevelopedClot_TEX.ZED_UndevelopedClot_SSS');
 	}
 }
+*/
 
 simulated static function float GetXPValue(byte Difficulty)
 {

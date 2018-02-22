@@ -8,7 +8,10 @@ function SetupCompatibilityClasses(KFGameInfo KFGI)
 	
 	CDGame = CD_Survival(KFGI);
 	if( CDGame == None )
+	{
+		Destroy();
 		return;
+	}
 	
     CDGame.SpawnManager = new(CDGame) class'KFAISpawnManager_Nightmare_CD';
     
@@ -20,54 +23,67 @@ function SetupCompatibilityClasses(KFGameInfo KFGI)
 
 function SetupDifficultySettings()
 {
-	local KFPawn_ZedCrawler_Nightmare Crawler;
-	local KFPawn_ZedClot_Alpha_Nightmare Alpha;
-	local KFPawn_ZedGorefast_Nightmare Gorefast;
-	local KFPawn_ZedFleshpound_Nightmare Fleshpound;
-	local KFPawn_ZedFleshpoundMini_Nightmare FleshpoundMini;
+	local KFDifficulty_ClotAlpha ClotADif;
+	local KFDifficulty_Crawler CrawlerDif;
+	local KFDifficulty_Gorefast GorefastDif;
+	local KFAIController_ZedFleshpound FPController;
 	local CD_Survival CDGame;
+	local int i;
 	
 	Super.SetupDifficultySettings();
 	
 	CDGame = CD_Survival(WorldInfo.Game);
 	if( CDGame == None )
-		return;
-	
-	if( !bool(CDGame.AlbinoCrawlers) )
 	{
-		Crawler = KFPawn_ZedCrawler_Nightmare(FindObject("NightmareDifficulty.Default__KFPawn_ZedCrawler_Nightmare",class'KFPawn_ZedCrawler_Nightmare'));
-		if( Crawler != None )
-			Crawler.DifficultySettings = class'CD_DS_Crawler_Regular';
+		Destroy();
+		return;
 	}
-	
+		
 	if( !bool(CDGame.AlbinoAlphas) )
 	{
-		Alpha = KFPawn_ZedClot_Alpha_Nightmare(FindObject("NightmareDifficulty.Default__KFPawn_ZedClot_Alpha_Nightmare",class'KFPawn_ZedClot_Alpha_Nightmare'));
-		if( Alpha != None )
-			Alpha.DifficultySettings = class'CD_DS_ClotAlpha_Regular';
-	}	
-	
+		ClotADif = KFDifficulty_ClotAlpha(FindObject("KFGameContent.Default__KFDifficulty_ClotAlpha",class'KFDifficulty_ClotAlpha'));
+		if( ClotADif != None )
+		{
+			for( i = 0; i < ClotADif.ChanceToSpawnAsSpecial.Length; i++ )
+			{
+				ClotADif.ChanceToSpawnAsSpecial[i] = 0;
+			}
+		}
+	}
+		
+	if( !bool(CDGame.AlbinoCrawlers) )
+	{
+		CrawlerDif = KFDifficulty_Crawler(FindObject("KFGameContent.Default__KFDifficulty_Crawler",class'KFDifficulty_Crawler'));
+		if( CrawlerDif != None )
+		{
+			for( i = 0; i < CrawlerDif.ChanceToSpawnAsSpecial.Length; i++ )
+			{
+				CrawlerDif.ChanceToSpawnAsSpecial[i] = 0;
+			}
+		}
+	}
+		
 	if( !bool(CDGame.AlbinoGorefasts) )
 	{
-		Gorefast = KFPawn_ZedGorefast_Nightmare(FindObject("NightmareDifficulty.Default__KFPawn_ZedGorefast_Nightmare",class'KFPawn_ZedGorefast_Nightmare'));
-		if( Gorefast != None )
-			Gorefast.DifficultySettings = class'CD_DS_Gorefast_Regular';
-	}	
+		GorefastDif = KFDifficulty_Gorefast(FindObject("KFGameContent.Default__KFDifficulty_Gorefast",class'KFDifficulty_Gorefast'));
+		if( GorefastDif != None )
+		{
+			for( i = 0; i < GorefastDif.ChanceToSpawnAsSpecial.Length; i++ )
+			{
+				GorefastDif.ChanceToSpawnAsSpecial[i] = 0;
+			}
+		}
+	}
 	
 	if( !bool(CDGame.FleshpoundRageSpawns) )
 	{
-		Fleshpound = KFPawn_ZedFleshpound_Nightmare(FindObject("NightmareDifficulty.Default__KFPawn_ZedFleshpound_Nightmare",class'KFPawn_ZedFleshpound_Nightmare'));
-		if( Fleshpound != None )
+		FPController = KFAIController_ZedFleshpound(FindObject("KFGame.Default__KFAIController_ZedFleshpound",class'KFAIController_ZedFleshpound'));
+		if( FPController != None )
 		{
-			Fleshpound.DifficultySettings = class'CD_DS_Fleshpound_Regular';
-			Fleshpound.ControllerClass = class'CD_AIController_FP_NRS';
-		}
-		
-		FleshpoundMini = KFPawn_ZedFleshpoundMini_Nightmare(FindObject("NightmareDifficulty.Default__KFPawn_ZedFleshpoundMini_Nightmare",class'KFPawn_ZedFleshpoundMini_Nightmare'));
-		if( FleshpoundMini != None )
-		{
-			FleshpoundMini.DifficultySettings = class'KFDifficulty_FleshpoundMini';
-			FleshpoundMini.ControllerClass = class'CD_AIController_FP_NRS';
+			for( i = 0; i < FPController.SpawnRagedChance.Length; i++ )
+			{
+				FPController.SpawnRagedChance[i] = 0.0f;
+			}
 		}
 	}
 }

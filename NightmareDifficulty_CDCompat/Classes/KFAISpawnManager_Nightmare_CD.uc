@@ -4,7 +4,7 @@ var CD_SpawnManager OriginalSpawnManager;
 var NightmareMutator ControllerMutator;
 
 function Initialize()
-{
+{ 
 	if( OriginalSpawnManager == None )
 	{
 		OriginalSpawnManager = new(Outer) class<CD_SpawnManager>(SpawnManagerClasses[GameLength]);
@@ -43,25 +43,24 @@ function Update()
 		if ( 0 == SpawnSquadResult || 0 >= Outer.CohortSizeInt )
 			break;
 			
-		CohortSquadsSpawned += 1;
+		OriginalSpawnManager.CohortSquadsSpawned += 1;
 	}
 
-	if ( 0 < CohortZedsSpawned )
+	if ( 0 < OriginalSpawnManager.CohortZedsSpawned )
 	{
 		OriginalSpawnManager.TimeUntilNextSpawn = OriginalSpawnManager.CalcNextGroupSpawnTime();
+		
+		SpawnEventsThisWave += 1;
+		LatestSpawnTimestamp = Outer.Worldinfo.RealTimeSeconds;
 
-		OriginalSpawnManager.SpawnEventsThisWave += 1;
-
-		OriginalSpawnManager.LatestSpawnTimestamp = Outer.Worldinfo.RealTimeSeconds;
-
-		if ( 0 > OriginalSpawnManager.FirstSpawnTimestamp )
+		if ( 0 > FirstSpawnTimestamp )
 		{
-			OriginalSpawnManager.FirstSpawnTimestamp = OriginalSpawnManager.LatestSpawnTimestamp;
+			FirstSpawnTimestamp = LatestSpawnTimestamp;
 		}
 
-		if ( NumAISpawnsQueued >= OriginalSpawnManager.WaveTotalAI && 0 > OriginalSpawnManager.FinalSpawnTimestamp )
+		if ( NumAISpawnsQueued >= OriginalSpawnManager.WaveTotalAI && 0 > FinalSpawnTimestamp )
 		{
-			OriginalSpawnManager.FinalSpawnTimestamp = OriginalSpawnManager.LatestSpawnTimestamp;
+			FinalSpawnTimestamp = LatestSpawnTimestamp;
 		}
 	}
 
@@ -74,6 +73,13 @@ function SetupNextWave(byte NextWaveIndex)
 {
 	OriginalSpawnManager.SetupNextWave(NextWaveIndex);
 	WaveTotalAI = OriginalSpawnManager.WaveTotalAI;
+	
+	WaveSetupTimestamp = Outer.WorldInfo.RealTimeSeconds;
+	FirstSpawnTimestamp = -1.f;
+	FinalSpawnTimestamp = -1.f;
+	LatestSpawnTimestamp = -1.f;
+	WaveEndTimestamp = -1.f;
+	SpawnEventsThisWave = 0;
 }
 
 function bool IsFinishedSpawning()

@@ -42,6 +42,13 @@ function PostBeginPlay()
 		Destroy();
 		return;
 	}
+	
+	if( KFGI.IsA('CD_Survival') && Class.Name == 'NightmareMutator' )
+	{
+		KFGI.AddMutator("NightmareDifficulty_CDCompat.NightmareMutator_CD", true);
+		Destroy();
+		return;
+	}
     
     if( ConfigVer == 0 )
     {
