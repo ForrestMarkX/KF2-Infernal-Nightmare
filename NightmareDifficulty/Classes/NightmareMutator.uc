@@ -35,20 +35,31 @@ function PostBeginPlay()
     local int i;
     
     Super.PostBeginPlay();
-	
-	KFGI = KFGameInfo(WorldInfo.Game);
-	if( KFGI == None || KFGI.IsA('KFGameInfo_VersusSurvival') || KFGI.GameDifficulty < 4 )
-	{
-		Destroy();
-		return;
-	}
-	
-	if( KFGI.IsA('CD_Survival') && Class.Name == 'NightmareMutator' )
-	{
-		KFGI.AddMutator("NightmareDifficulty_CDCompat.NightmareMutator_CD", true);
-		Destroy();
-		return;
-	}
+    
+    KFGI = KFGameInfo(WorldInfo.Game);
+    if( KFGI == None || KFGI.IsA('KFGameInfo_VersusSurvival') || KFGI.GameDifficulty < 4 )
+    {
+        Destroy();
+        return;
+    }
+    
+    if( Class.Name == 'NightmareMutator' )
+    {
+        if( KFGI.IsA('CD_Survival') )
+        {
+            KFGI.AddMutator("NightmareDifficulty_CDCompat.NightmareMutator_CD", true);
+            Destroy();
+            return;
+        }
+		/*
+        else if( KFGI.IsA('KFGameInfo_Endless') )
+        {
+            KFGI.AddMutator("NightmareDifficulty.NightmareMutator_Other", true);
+            Destroy();
+            return;	
+		}
+		*/
+    }
     
     if( ConfigVer == 0 )
     {
@@ -113,12 +124,16 @@ function AdjustVariousSettings()
     KFGI = KFGameInfo(WorldInfo.Game);
     if( KFGI == None || KFGI.GameDifficulty < `DIFFICULTY_NIGHTMARE )
         return;
-		
-	SetupCompatibilityClasses(KFGI);
-    
+        
+    SetupCompatibilityClasses(KFGI);
+        
+    KFGI.DifficultyInfo = new(KFGI) class'KFGameDifficulty_Nightmare';
     KFDI = KFGameDifficulty_Nightmare(KFGI.DifficultyInfo);
     if( KFDI != None )
     {
+        KFDI.GameOwner = KFGI;
+        KFDI.SetDifficultySettings( KFGI.GameDifficulty );
+        
         if( ZedModifiers.HealthMult < 1 )
             `warn( "HealthMult is less than 1! Defaulting to 1" );
         if( ZedModifiers.HeadHealthMult < 1 )
@@ -134,12 +149,14 @@ function AdjustVariousSettings()
 
 function SetupCompatibilityClasses(KFGameInfo KFGI)
 {
-    KFGI.SpawnManager = new(KFGI) class'KFAISpawnManager_Nightmare';
-    
-    if( KFAISpawnManager_Nightmare(KFGI.SpawnManager) != None )
-        KFAISpawnManager_Nightmare(KFGI.SpawnManager).ControllerMutator = self;
-    
-    KFGI.SpawnManager.Initialize();
+	if( KFGI.IsA('KFGameInfo_Endless') )
+		KFGI.SpawnManager = new(KFGameInfo_Endless(KFGI)) class'KFAISpawnManager_Endless_Nightmare';
+	else KFGI.SpawnManager = new(KFGI) class'KFAISpawnManager_Nightmare';
+	
+	if( KFAISpawnManager_Nightmare(KFGI.SpawnManager) != None )
+		KFAISpawnManager_Nightmare(KFGI.SpawnManager).ControllerMutator = self;
+	
+	KFGI.SpawnManager.Initialize();
     
     KFGI.DifficultyInfo = new(KFGI) class'KFGameDifficulty_Nightmare';
     
@@ -204,8 +221,8 @@ function SetupDifficultySettings()
     FPAI = KFAIController_ZedFleshpound(FindObject("KFGameContent.Default__KFAIController_ZedFleshpound",class'KFAIController_ZedFleshpound'));
     if( FPAI != None )
         FPAI.SpawnRagedChance.AddItem(1.0);
-		
-	HuskAI = KFAIController_ZedHusk(FindObject("KFGameContent.Default__KFAIController_ZedHusk",class'KFAIController_ZedHusk'));
+        
+    HuskAI = KFAIController_ZedHusk(FindObject("KFGameContent.Default__KFAIController_ZedHusk",class'KFAIController_ZedHusk'));
     if( HuskAI != None )
         HuskAI.RequiredHealthPercentForSuicide = 0.3f;
 }
@@ -236,6 +253,7 @@ defaultproperties
 {
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedClot_Cyst', Replacment=class'NightmareDifficulty.KFPawn_ZedClot_Cyst_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedClot_Alpha', Replacment=class'NightmareDifficulty.KFPawn_ZedClot_Alpha_Nightmare'))
+    AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedClot_AlphaKing', Replacment=class'NightmareDifficulty.KFPawn_ZedClot_AlphaKing_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedClot_Slasher', Replacment=class'NightmareDifficulty.KFPawn_ZedClot_Slasher_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedCrawler', Replacment=class'NightmareDifficulty.KFPawn_ZedCrawler_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedGorefast', Replacment=class'NightmareDifficulty.KFPawn_ZedGorefast_Nightmare'))
@@ -245,6 +263,7 @@ defaultproperties
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedFleshpoundMini', Replacment=class'NightmareDifficulty.KFPawn_ZedFleshpoundMini_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedFleshpoundKing', Replacment=class'NightmareDifficulty.KFPawn_ZedFleshpoundKing_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedBloat', Replacment=class'NightmareDifficulty.KFPawn_ZedBloat_Nightmare'))
+    AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedBloatKing', Replacment=class'NightmareDifficulty.KFPawn_ZedBloatKing_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedSiren', Replacment=class'NightmareDifficulty.KFPawn_ZedSiren_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedHusk', Replacment=class'NightmareDifficulty.KFPawn_ZedHusk_Nightmare'))
     AIClassList.Add((Original=class'KFGameContent.KFPawn_ZedHans', Replacment=class'NightmareDifficulty.KFPawn_ZedHans_Nightmare'))

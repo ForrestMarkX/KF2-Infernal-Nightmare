@@ -2,13 +2,19 @@ class KFPawn_ZedGorefast_Nightmare extends KFPawn_ZedGorefast;
 
 var const array<float> XPValuesMod;
 var LinearColor MainGlowColor;
+var transient ParticleSystemComponent EyeGlowPSCs[2];
 
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
+	{
 		UpdateGameplayMICParams();
+		
+		EyeGlowPSCs[0] = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment( ParticleSystem'ZED_Clot_EMIT.FX_Player_Zed_Buff_01', Mesh, 'FX_EYE_L', true );
+		EyeGlowPSCs[1] = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment( ParticleSystem'ZED_Clot_EMIT.FX_Player_Zed_Buff_01', Mesh, 'FX_EYE_R', true );
+	}
 }
 
 simulated function UpdateGameplayMICParams()
@@ -43,5 +49,6 @@ DefaultProperties
 	XPValuesMod(3)=14
 	XPValuesMod(4)=17
 	
-	ElitePawnClass=class'KFPawn_ZedGorefastDualBlade_Nightmare'
+	ElitePawnClass.Empty
+	ElitePawnClass.Add(class'KFPawn_ZedGorefastDualBlade_Nightmare')
 }

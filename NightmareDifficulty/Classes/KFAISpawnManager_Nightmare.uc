@@ -43,9 +43,9 @@ function int GetNumAINeeded()
     return OriginalSpawnManager.GetNumAINeeded();
 }
 
-function SetupNextWave(byte NextWaveIndex)
+function SetupNextWave(byte NextWaveIndex, int TimeToNextWaveBuffer = 0)
 {
-    OriginalSpawnManager.SetupNextWave(NextWaveIndex);
+    OriginalSpawnManager.SetupNextWave(NextWaveIndex, TimeToNextWaveBuffer);
     WaveTotalAI = OriginalSpawnManager.WaveTotalAI;
 }
 

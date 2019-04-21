@@ -12,11 +12,7 @@ function LocalizeText()
 
 	if(KFGRI != none)
 	{
-		CurrentGameDifficulty = KFGameReplicationInfo(GetPC().WorldInfo.GRI).GameDifficulty;
-		if( CurrentGameDifficulty == `DIFFICULTY_NIGHTMARE )
-			GameDifficultyString = "Infernal Nightmare";
-		else GameDifficultyString = class'KFCommon_LocalizedStrings'.static.GetDifficultyString(CurrentGameDifficulty);
-
+		GameDifficultyString = KFGRI.GameDifficulty == `DIFFICULTY_NIGHTMARE ? "Infernal Nightmare" : class'KFCommon_LocalizedStrings'.static.GetDifficultyString(KFGRI.GameDifficulty);
 		GameTypeString =  KFGRI.GameClass.default.GameName;
     	MatchInfoString = GameTypeString @"-" @GameDifficultyString;
 	}
@@ -25,7 +21,7 @@ function LocalizeText()
 	LocalizedObject.SetString("waveText", WaveString);
 	LocalizedObject.SetString("mapText", class'KFCommon_LocalizedStrings'.static.GetFriendlyMapName(GetPC().WorldInfo.GetMapName(true)));
 	LocalizedObject.SetString("matchInfo", MatchInfoString);
-	
+
 	SetObject("localizeText", LocalizedObject);
 
 	bLocalized = true;

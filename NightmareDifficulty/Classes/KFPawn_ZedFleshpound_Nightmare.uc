@@ -2,6 +2,7 @@ class KFPawn_ZedFleshpound_Nightmare extends KFPawn_ZedFleshpound;
 
 var KFGameExplosion RagePoundExplosionTemplate;
 var const array<float> XPValuesMod;
+var transient ParticleSystemComponent EyeGlowPSCs[2];
 
 simulated function PostBeginPlay()
 {
@@ -11,7 +12,12 @@ simulated function PostBeginPlay()
 	PawnAnimInfo = KFPawnAnimInfo'ZED_Fleshpound_ANIM.King_Fleshpound_AnimGroup';
 	
 	if( WorldInfo.NetMode!=NM_DedicatedServer )
+	{
 		UpdateGameplayMICParams();
+		
+		EyeGlowPSCs[0] = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment( ParticleSystem'ZED_Clot_EMIT.FX_Player_Zed_Buff_01', Mesh, 'FX_EYE_L', true );
+		EyeGlowPSCs[1] = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment( ParticleSystem'ZED_Clot_EMIT.FX_Player_Zed_Buff_01', Mesh, 'FX_EYE_R', true );
+	}
 }
 
 simulated function UpdateGameplayMICParams()
@@ -102,5 +108,6 @@ DefaultProperties
 	
 	PawnAnimInfo=KFPawnAnimInfo'ZED_Fleshpound_ANIM.King_Fleshpound_AnimGroup'
 	
-	ElitePawnClass=class'KFPawn_ZedFleshpoundAlpha_Nightmare'
+	ElitePawnClass.Empty
+	ElitePawnClass.Add(class'KFPawn_ZedFleshpoundAlpha_Nightmare')
 }

@@ -14,4 +14,6 @@ DefaultProperties
 	XPValuesMod(2)=10
 	XPValuesMod(3)=10
 	XPValuesMod(4)=12
+	
+	ElitePawnClass.Empty
 }

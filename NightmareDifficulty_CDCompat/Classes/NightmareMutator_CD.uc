@@ -1,26 +1,5 @@
 class NightmareMutator_CD extends NightmareMutator;
 
-function SetupCompatibilityClasses(KFGameInfo KFGI)
-{
-	local CD_Survival CDGame;
-	
-	Super.SetupCompatibilityClasses(KFGI);
-	
-	CDGame = CD_Survival(KFGI);
-	if( CDGame == None )
-	{
-		Destroy();
-		return;
-	}
-	
-    CDGame.SpawnManager = new(CDGame) class'KFAISpawnManager_Nightmare_CD';
-    
-    if( KFAISpawnManager_Nightmare_CD(CDGame.SpawnManager) != None )
-        KFAISpawnManager_Nightmare_CD(CDGame.SpawnManager).ControllerMutator = self;
-    
-    CDGame.SpawnManager.Initialize();
-}
-
 function SetupDifficultySettings()
 {
 	local KFDifficulty_ClotAlpha ClotADif;

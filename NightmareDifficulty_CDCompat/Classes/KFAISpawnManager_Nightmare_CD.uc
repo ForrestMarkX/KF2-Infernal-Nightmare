@@ -69,9 +69,9 @@ function Update()
 	OriginalSpawnManager.CohortVolumeIndex = 0;
 }
 
-function SetupNextWave(byte NextWaveIndex)
+function SetupNextWave(byte NextWaveIndex, int TimeToNextWaveBuffer = 0)
 {
-	OriginalSpawnManager.SetupNextWave(NextWaveIndex);
+	OriginalSpawnManager.SetupNextWave(NextWaveIndex, TimeToNextWaveBuffer);
 	WaveTotalAI = OriginalSpawnManager.WaveTotalAI;
 	
 	WaveSetupTimestamp = Outer.WorldInfo.RealTimeSeconds;
